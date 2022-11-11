@@ -25,7 +25,7 @@ pipeline {
                 }
             }
             steps {
-                echo 'Deploying....'
+                echo 'Deploying to master....'
             }
         }
     }
