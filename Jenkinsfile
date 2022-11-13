@@ -1,3 +1,5 @@
+def gv
+
 pipeline {
     agent any
     tools {
@@ -5,23 +7,24 @@ pipeline {
     }
 
     stages {
+        stage("init") {
+            steps {
+                script {
+                   gv = load "script.groovy"
+                }
+            }
+        }
         stage('Build Jar') {
             steps {
                 script {
-                     echo 'Building application..'
-                     sh 'mvn package'
+                     gv.buildJar()
                 }
             }
         }
         stage('Build image') {
             steps {
                 script {
-                    echo 'Building application docker image..'
-                    withCredentials([usernamePassword(credentialsId: 'docker-hub-repo', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                            sh 'docker build -t akodevops/demo:jma-2.0 .'
-                            sh "echo $PASS | docker login -u $USER --password-stdin"
-                            sh 'docker push akodevops/demo:jma-2.0'
-                        }
+                    gv.buildImage()
                 }
             }
         }
@@ -32,7 +35,9 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                script {
+                    gv.eployApp()
+                }
             }
         }
     }
